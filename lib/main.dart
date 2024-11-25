@@ -1,7 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:seminario_7/screens/screens.dart';
+import 'package:seminario_7/services/services.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(AppState());
+
+class AppState extends StatelessWidget {
+  const AppState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProductsService(),),
+      ],
+      child: MyApp(),
+    );
+  }
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -21,8 +37,10 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         HomeScreen.routeName: (_) => HomeScreen(),
+        ProductScreen.routeName: (_) => ProductScreen(),
+
       },
-      initialRoute: HomeScreen.routeName,
+      initialRoute: ProductScreen.routeName,
     );
   }
 }
