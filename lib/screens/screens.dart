@@ -1,0 +1,1 @@
+export 'package:seminario_7/screens/home_screen.dart';

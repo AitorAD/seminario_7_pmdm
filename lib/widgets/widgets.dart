@@ -1,0 +1,1 @@
+export 'package:seminario_7/widgets/product_card.dart';

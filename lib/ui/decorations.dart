@@ -1,0 +1,1 @@
+export 'package:seminario_7/ui/decoration_product_card.dart';
