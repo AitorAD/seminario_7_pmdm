@@ -20,14 +20,17 @@ class ProductCard extends StatelessWidget {
             _BackgroundImage(url: product.picture),
             Align(
               alignment: Alignment.bottomLeft,
-              child: _ProductDetails(),
+              child: _ProductDetails(
+                name: product.name,
+                subtitle: product.id,
+              ),
             ),
             Positioned(
               top: 0,
               right: 0,
-              child: _PriceTag(),
+              child: _PriceTag(price: product.price),
             ),
-            _NotAvailable()
+            if (!product.available) _NotAvailable(),
           ],
         ),
       ),
@@ -86,8 +89,10 @@ class _NotAvailable extends StatelessWidget {
 }
 
 class _PriceTag extends StatelessWidget {
+  final double price;
   const _PriceTag({
     super.key,
+    required this.price,
   });
 
   @override
@@ -104,7 +109,7 @@ class _PriceTag extends StatelessWidget {
             horizontal: 10,
           ),
           child: Text(
-            '103,99€',
+            price.toString() + '€',
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -117,8 +122,12 @@ class _PriceTag extends StatelessWidget {
 }
 
 class _ProductDetails extends StatelessWidget {
+  final name;
+  final subtitle;
   const _ProductDetails({
     super.key,
+    this.name,
+    this.subtitle,
   });
 
   @override
@@ -134,7 +143,7 @@ class _ProductDetails extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Disco duro G',
+              name,
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.white,
@@ -144,7 +153,7 @@ class _ProductDetails extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              'Id del disco duro',
+              subtitle,
               style: TextStyle(
                 fontSize: 15,
                 color: Colors.white,
@@ -173,7 +182,9 @@ class _BackgroundImage extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         child: FadeInImage(
           placeholder: AssetImage('assets/jar-loading.gif'),
-          image: NetworkImage(url!),
+          image: url != null
+              ? NetworkImage(url!)
+              : AssetImage('assets/no-image.png'),
           fit: BoxFit.cover,
         ),
       ),

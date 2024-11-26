@@ -22,7 +22,7 @@ class Product {
   factory Product.fromMap(Map<String, dynamic> json) => Product(
         available: json["available"] ?? false,
         name: json["name"] ?? 'None',
-        picture: json["picture"] ?? "https://placehold.co/400x300",
+        picture: json["picture"],
         price: json["price"]?.toDouble() ?? 0.0,
       );
 
@@ -32,4 +32,17 @@ class Product {
         "picture": picture,
         "price": price,
       };
+
+  @override
+  String toString() {
+    return 'id: $id, available: $name, available: $available, picture: $picture, price: $price';
+  }
+
+  Product copy() => Product(
+        available: this.available,
+        name: this.name,
+        picture: this.picture,
+        price: this.price,
+        id: this.id,
+      );
 }

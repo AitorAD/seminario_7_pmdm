@@ -8,8 +8,8 @@ class ProductsService extends ChangeNotifier {
   final String _baseUrl = 'seminario-7-default-rtdb.firebaseio.com';
 
   final List<Product> products = [];
-
   bool isLoading = true;
+  late Product selectedProduct;
 
   ProductsService() {
     this.loadProducts();
@@ -33,7 +33,7 @@ class ProductsService extends ChangeNotifier {
     this.isLoading = false;
     notifyListeners();
     
-    print(this.products[0].name);
+    print(this.products[0]);
     return this.products;
   }
 }

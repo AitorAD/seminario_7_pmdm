@@ -1,0 +1,1 @@
+export 'package:seminario_7/providers/product_form_provider.dart';
