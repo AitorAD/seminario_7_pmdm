@@ -38,9 +38,9 @@ class MyApp extends StatelessWidget {
       routes: {
         HomeScreen.routeName: (_) => HomeScreen(),
         ProductScreen.routeName: (_) => ProductScreen(),
-
+        LoadingScreen.routeName: (_) => LoadingScreen(),
       },
-      initialRoute: ProductScreen.routeName,
+      initialRoute: HomeScreen.routeName,
     );
   }
 }

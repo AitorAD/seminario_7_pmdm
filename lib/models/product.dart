@@ -20,10 +20,10 @@ class Product {
   String toJson() => json.encode(toMap());
 
   factory Product.fromMap(Map<String, dynamic> json) => Product(
-        available: json["available"],
-        name: json["name"],
+        available: json["available"] ?? false,
+        name: json["name"] ?? 'None',
         picture: json["picture"] ?? "https://placehold.co/400x300",
-        price: json["price"]?.toDouble(),
+        price: json["price"]?.toDouble() ?? 0.0,
       );
 
   Map<String, dynamic> toMap() => {

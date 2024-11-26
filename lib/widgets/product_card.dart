@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:seminario_7/models/product.dart';
 import 'package:seminario_7/ui/decorations.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key});
+  final Product product;
+  const ProductCard({super.key, required this.product});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class ProductCard extends StatelessWidget {
         decoration: _cardBorders(),
         child: Stack(
           children: [
-            _BackgroundImage(),
+            _BackgroundImage(url: product.picture),
             Align(
               alignment: Alignment.bottomLeft,
               child: _ProductDetails(),
@@ -156,8 +158,10 @@ class _ProductDetails extends StatelessWidget {
 }
 
 class _BackgroundImage extends StatelessWidget {
+  final String? url;
   const _BackgroundImage({
     super.key,
+    this.url,
   });
 
   @override
@@ -169,8 +173,7 @@ class _BackgroundImage extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         child: FadeInImage(
           placeholder: AssetImage('assets/jar-loading.gif'),
-          image: NetworkImage(
-              'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVYz5dyQZheD5YJM8ZjCrkYIyhHwAMiQigtA&s'),
+          image: NetworkImage(url!),
           fit: BoxFit.cover,
         ),
       ),
