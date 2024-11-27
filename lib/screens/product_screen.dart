@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:seminario_7/models/product.dart';
 import 'package:seminario_7/providers/product_form_provider.dart';
 import 'package:seminario_7/services/services.dart';
 import 'package:seminario_7/widgets/widgets.dart';
 import 'package:seminario_7/ui/decorations.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProductScreen extends StatelessWidget {
   static final routeName = 'product_screen';
@@ -31,9 +35,15 @@ class _ProductScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final productForm = Provider.of<ProductFormProvider>(context);
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          if (!productForm.isValidForm()) return;
+
+          await productsService.saveOrCreateProduct(productForm.product);
+        },
         child: Icon(
           Icons.save_outlined,
         ),
@@ -43,15 +53,13 @@ class _ProductScreenBody extends StatelessWidget {
           children: [
             Stack(
               children: [
-                ProductImage(
-                  url: productsService.selectedProduct.picture,
-                ),
+                ProductImage(url: productForm.product.picture),
                 Positioned(
                   top: 60,
                   left: 20,
                   child: IconButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(context);
                     },
                     icon: Icon(
                       Icons.arrow_back_sharp,
@@ -64,7 +72,9 @@ class _ProductScreenBody extends StatelessWidget {
                   top: 60,
                   right: 20,
                   child: IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await _processImage(productForm);
+                    },
                     icon: Icon(
                       Icons.camera_alt_outlined,
                       size: 40,
@@ -74,19 +84,45 @@ class _ProductScreenBody extends StatelessWidget {
                 ),
               ],
             ),
-            _ProductForm(product: productsService.selectedProduct),
+            _ProductForm(
+              product: productsService.selectedProduct,
+              productForm: productForm,
+            ),
           ],
         ),
       ),
     );
   }
+
+  Future<void> _processImage(ProductFormProvider productForm) async {
+    final _picker = ImagePicker();
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.camera, imageQuality: 100);
+
+    if (pickedFile == null) {
+      print('No seleccionó nada');
+      return;
+    }
+
+    productsService.newPictureFile = File(pickedFile.path);
+
+    final String? imageUrl = await productsService.uploadImage();
+    print('Uploaded Image URL: $imageUrl');
+
+    if (imageUrl != null) {
+      productsService.updateSelectedProductImage(imageUrl);
+      productForm.product.picture = imageUrl;
+    }
+  }
 }
 
 class _ProductForm extends StatelessWidget {
   final Product product;
+  final ProductFormProvider productForm;
   const _ProductForm({
     super.key,
     required this.product,
+    required this.productForm,
   });
 
   @override
@@ -109,6 +145,8 @@ class _ProductForm extends StatelessWidget {
           ],
         ),
         child: Form(
+          key: productForm.formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             children: [
               SizedBox(height: 10),
@@ -135,6 +173,10 @@ class _ProductForm extends StatelessWidget {
                     product.price = double.parse(value);
                   }
                 },
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                      RegExp(r'^(\d+)?\.?\d{0,2}'))
+                ],
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
                   hintText: '150€',
@@ -146,7 +188,7 @@ class _ProductForm extends StatelessWidget {
                 value: product.available,
                 title: Text('Disponible'),
                 activeColor: Colors.indigo,
-                onChanged: (value) => product.available = value,
+                onChanged: (value) => productForm.updateAvailabitily(value),
               )
             ],
           ),
