@@ -9,6 +9,7 @@ import 'package:seminario_7/services/services.dart';
 import 'package:seminario_7/widgets/widgets.dart';
 import 'package:seminario_7/ui/decorations.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class ProductScreen extends StatelessWidget {
   static final routeName = 'product_screen';
@@ -44,9 +45,9 @@ class _ProductScreenBody extends StatelessWidget {
 
           await productsService.saveOrCreateProduct(productForm.product);
         },
-        child: Icon(
-          Icons.save_outlined,
-        ),
+        child: productsService.isSaving
+            ? CircularProgressIndicator(color: Colors.white)
+            : Icon(Icons.save_outlined),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -73,10 +74,24 @@ class _ProductScreenBody extends StatelessWidget {
                   right: 20,
                   child: IconButton(
                     onPressed: () async {
-                      await _processImage(productForm);
+                      await _processImage(productForm, ImageSource.camera);
                     },
                     icon: Icon(
                       Icons.camera_alt_outlined,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 20,
+                  right: 20,
+                  child: IconButton(
+                    onPressed: () async {
+                      await _processImage(productForm, ImageSource.gallery);
+                    },
+                    icon: Icon(
+                      Icons.add_photo_alternate_outlined,
                       size: 40,
                       color: Colors.white,
                     ),
@@ -94,10 +109,11 @@ class _ProductScreenBody extends StatelessWidget {
     );
   }
 
-  Future<void> _processImage(ProductFormProvider productForm) async {
+  Future<void> _processImage(
+      ProductFormProvider productForm, ImageSource imageSource) async {
     final _picker = ImagePicker();
     final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.camera, imageQuality: 100);
+        await _picker.pickImage(source: imageSource, imageQuality: 100);
 
     if (pickedFile == null) {
       print('No seleccionó nada');
@@ -163,7 +179,7 @@ class _ProductForm extends StatelessWidget {
                   labelText: 'Nombre',
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 15),
               TextFormField(
                 initialValue: '${product.price}',
                 onChanged: (value) {
@@ -183,13 +199,24 @@ class _ProductForm extends StatelessWidget {
                   labelText: 'Precio',
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 15),
+              TextFormField(
+                initialValue:
+                    DateFormat('dd/MM/yyyy').format(product.registerDate),
+                enabled: false,
+                keyboardType: TextInputType.datetime,
+                decoration: InputDecorations.authInputDecoration(
+                  hintText: '01/01/2000',
+                  labelText: 'Fecha de registro',
+                ),
+              ),
+              SizedBox(height: 15),
               SwitchListTile.adaptive(
                 value: product.available,
                 title: Text('Disponible'),
                 activeColor: Colors.indigo,
                 onChanged: (value) => productForm.updateAvailabitily(value),
-              )
+              ),
             ],
           ),
         ),

@@ -65,6 +65,17 @@ class ProductsService extends ChangeNotifier {
     return product.id!;
   }
 
+  Future<bool> deleteProduct(Product product) async {
+    final url = Uri.https(_baseUrl, '/products/${product.id}.json');
+    final resp = await http.delete(url, body: product.toJson());
+
+    if (resp.statusCode == 200) {
+      this.products.remove(product);
+      return true;
+    }
+    return false;
+  }
+
   Future saveOrCreateProduct(Product product) async {
     isSaving = true;
     notifyListeners();

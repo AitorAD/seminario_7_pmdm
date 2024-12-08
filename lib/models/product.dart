@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 class Product {
   String? id;
   bool available;
   String name;
   String? picture;
   double price;
+  DateTime registerDate;
 
   Product({
     this.id,
@@ -13,6 +16,7 @@ class Product {
     required this.name,
     this.picture,
     required this.price,
+    required this.registerDate,
   });
 
   factory Product.fromJson(String str) => Product.fromMap(json.decode(str));
@@ -24,6 +28,8 @@ class Product {
         name: json["name"] ?? 'None',
         picture: json["picture"],
         price: json["price"]?.toDouble() ?? 0.0,
+        registerDate: DateFormat('dd/MM/yyyy').parse(json["registerDate"]) ??
+            DateTime.now(),
       );
 
   Map<String, dynamic> toMap() => {
@@ -31,6 +37,7 @@ class Product {
         "name": name,
         "picture": picture,
         "price": price,
+        "registerDate": DateFormat('dd/MM/yyyy').format(registerDate),
       };
 
   @override
@@ -44,5 +51,6 @@ class Product {
         picture: this.picture,
         price: this.price,
         id: this.id,
+        registerDate: this.registerDate,
       );
 }
